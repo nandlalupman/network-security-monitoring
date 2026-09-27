@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Network Security Monitoring Platform - Real-time network threat detection and traffic analysis dashboard">
+    <title>NSM Platform - Network Security Monitoring</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- TOP NAVIGATION BAR                          -->
+    <!-- ═══════════════════════════════════════════ -->
+    <header class="navbar" id="navbar">
+        <div class="navbar-brand">
+            <div class="logo-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+            </div>
+            <div>
+                <h1 class="navbar-title">NSM Platform</h1>
+                <p class="navbar-subtitle">Network Security Monitoring</p>
+            </div>
+        </div>
+        <div class="navbar-status">
+            <span class="status-dot" id="statusDot"></span>
+            <span class="status-text" id="statusText">Connecting...</span>
+        </div>
+        <div class="navbar-actions">
+            <button class="btn btn-outline" id="btnClear" title="Clear all data">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                Clear
+            </button>
+            <button class="btn btn-primary" id="btnAnalyze" title="Analyze sample.pcap">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                Analyze PCAP
+            </button>
+            <label class="btn btn-accent" id="btnUpload" title="Upload a PCAP file">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                Upload
+                <input type="file" id="fileInput" accept=".pcap,.pcapng" hidden>
+            </label>
+        </div>
+    </header>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- MAIN CONTENT                                -->
+    <!-- ═══════════════════════════════════════════ -->
+    <main class="main-content">
+
+        <!-- NOTIFICATION TOAST -->
+        <div class="toast" id="toast">
+            <span class="toast-icon" id="toastIcon">&#10003;</span>
+            <span class="toast-message" id="toastMessage"></span>
+        </div>
+
+        <!-- ── ROW 1: Summary Stat Cards ── -->
+        <section class="stats-grid" id="statsGrid">
+            <div class="stat-card" id="cardTotalPackets">
+                <div class="stat-icon packets-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value" id="totalPackets">0</span>
+                    <span class="stat-label">Total Packets</span>
+                </div>
+            </div>
+            <div class="stat-card" id="cardActiveAlerts">
+                <div class="stat-icon alerts-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value" id="activeAlerts">0</span>
+                    <span class="stat-label">Active Alerts</span>
+                </div>
+            </div>
+            <div class="stat-card" id="cardPortScan">
+                <div class="stat-icon scan-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value" id="portScanCount">0</span>
+                    <span class="stat-label">Port Scans</span>
+                </div>
+            </div>
+            <div class="stat-card" id="cardBruteForce">
+                <div class="stat-icon brute-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value" id="bruteForceCount">0</span>
+                    <span class="stat-label">Brute Force</span>
+                </div>
+            </div>
+            <div class="stat-card" id="cardSynFlood">
+                <div class="stat-icon flood-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value" id="synFloodCount">0</span>
+                    <span class="stat-label">SYN Floods</span>
+                </div>
+            </div>
+            <div class="stat-card" id="cardHighAlerts">
+                <div class="stat-icon high-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value" id="highAlerts">0</span>
+                    <span class="stat-label">High/Critical</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── ROW 2: Charts ── -->
+        <section class="charts-grid">
+            <div class="card chart-card" id="trafficChartCard">
+                <div class="card-header">
+                    <h2 class="card-title">Network Traffic Distribution</h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="trafficChart"></canvas>
+                </div>
+            </div>
+            <div class="card chart-card" id="attackChartCard">
+                <div class="card-header">
+                    <h2 class="card-title">Attack Summary</h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="attackChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── ROW 3: Alerts Table + Severity Breakdown ── -->
+        <section class="bottom-grid">
+            <div class="card table-card" id="alertsTableCard">
+                <div class="card-header">
+                    <h2 class="card-title">Recent Alerts</h2>
+                    <span class="badge" id="alertsBadge">0</span>
+                </div>
+                <div class="table-wrapper">
+                    <table class="alerts-table" id="alertsTable">
+                        <thead>
+                            <tr>
+                                <th>Severity</th>
+                                <th>Attack Type</th>
+                                <th>Source IP</th>
+                                <th>Destination IP</th>
+                                <th>Details</th>
+                                <th>Confidence</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alertsBody">
+                            <tr class="empty-row">
+                                <td colspan="7">No alerts yet. Click "Analyze PCAP" to start.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card severity-card" id="severityCard">
+                <div class="card-header">
+                    <h2 class="card-title">Severity Breakdown</h2>
+                </div>
+                <div class="chart-container chart-container-small">
+                    <canvas id="severityChart"></canvas>
+                </div>
+                <div class="severity-legend" id="severityLegend">
+                    <!-- Filled by JS -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- FOOTER                                      -->
+    <!-- ═══════════════════════════════════════════ -->
+    <footer class="footer">
+        <p>NSM Platform &mdash; Network Security Monitoring &bull; Academic Project 2026</p>
+    </footer>
+
+    <!-- Chart.js from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

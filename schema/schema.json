@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NSM Platform Data Contract",
+  "description": "Frozen JSON schemas for parsed packets and generated security alerts",
+  "definitions": {
+    "packet": {
+      "type": "object",
+      "required": ["timestamp", "src_ip", "dst_ip", "src_port", "dst_port", "protocol", "flags", "length"],
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "description": "ISO 8601 formatted timestamp of the packet"
+        },
+        "src_ip": {
+          "type": "string",
+          "description": "Source IPv4 or IPv6 address"
+        },
+        "dst_ip": {
+          "type": "string",
+          "description": "Destination IPv4 or IPv6 address"
+        },
+        "src_port": {
+          "type": ["integer", "null"],
+          "description": "Source transport port number (null for ICMP/raw IP)"
+        },
+        "dst_port": {
+          "type": ["integer", "null"],
+          "description": "Destination transport port number (null for ICMP/raw IP)"
+        },
+        "protocol": {
+          "type": "string",
+          "enum": ["TCP", "UDP", "ICMP", "OTHER"],
+          "description": "Transport or network protocol name"
+        },
+        "flags": {
+          "type": "string",
+          "description": "TCP flags string (e.g., 'SYN', 'ACK', 'SYN-ACK', 'FIN') or empty for UDP/ICMP"
+        },
+        "length": {
+          "type": "integer",
+          "description": "Total length of the packet in bytes"
+        }
+      }
+    },
+    "alert": {
+      "type": "object",
+      "required": ["alert_id", "timestamp", "attack_type", "severity", "src_ip", "dst_ip", "details", "confidence"],
+      "properties": {
+        "alert_id": {
+          "type": "string",
+          "description": "Unique identifier for the alert (UUID or hex hash)"
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "ISO 8601 formatted timestamp when the alert condition was detected"
+        },
+        "attack_type": {
+          "type": "string",
+          "enum": ["port_scan", "syn_flood", "brute_force", "suspicious_traffic"],
+          "description": "Type of detected attack"
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "critical"],
+          "description": "Severity level of the security event"
+        },
+        "src_ip": {
+          "type": "string",
+          "description": "Attacker / Source IP address"
+        },
+        "dst_ip": {
+          "type": "string",
+          "description": "Target / Destination IP address"
+        },
+        "details": {
+          "type": "string",
+          "description": "Human-readable explanation of why the rule triggered"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Confidence score between 0.0 and 1.0"
+        }
+      }
+    }
+  }
+}

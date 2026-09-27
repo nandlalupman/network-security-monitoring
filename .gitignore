@@ -1,0 +1,37 @@
+# Python virtual environment — DO NOT push this
+venv/
+env/
+.env
+
+# SQLite database file — generated at runtime
+*.db
+*.sqlite
+
+# Python compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# IDE folders
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
